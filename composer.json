@@ -1,0 +1,39 @@
+{
+  "name": "chocoboxxf/yii2-alidayu-sdk",
+  "type": "yii2-extension",
+  "description": "Alidayu API for Yii 2.0",
+  "keywords": ["yii2", "alidayu", "sms", "telephone", "sdk"],
+  "homepage": "https://github.com/chocoboxxf/yii2-alidayu-sdk",
+  "license": "MIT",
+  "support": {
+    "issues": "https://github.com/chocoboxxf/yii2-alidayu-sdk/issues",
+    "wiki": "https://github.com/chocoboxxf/yii2-alidayu-sdk/wiki",
+    "source": "https://github.com/chocoboxxf/yii2-alidayu-sdk"
+  },
+  "authors": [
+    {
+      "name": "chocoboxxf",
+      "email": "neil.xuxf@gmail.com",
+      "homepage": "https://github.com/chocoboxxf",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=5.4.0",
+    "yiisoft/yii2": "*",
+    "guzzlehttp/guzzle": "~5.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": ">=4.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "chocoboxxf\\Alidayu\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "chocoboxxf\\Alidayu\\Tests\\": "tests/"
+    }
+  }
+}
