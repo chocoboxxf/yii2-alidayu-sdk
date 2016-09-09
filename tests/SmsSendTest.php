@@ -11,6 +11,6 @@ class SmsSendTest extends BaseTest
 {
     public function testSend()
     {
-        var_dump($this->client->smsSend('13402149607', 'SMS_13450746', '测试1', 'normal', ['code' => '111233'], '100022'));
+        var_dump($this->client->smsSend('1300000000', 'SMS_100000', '测试签名', 'normal', ['code' => '111111'], '100000'));
     }
 }

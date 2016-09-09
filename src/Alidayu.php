@@ -40,6 +40,7 @@ class Alidayu extends Component
     const API_ALIBABA_ALIQIN_SECRET_AXB_UNBIND = 'alibaba.aliqin.secret.axb.unbind'; // AXB关系解绑接口
 
     const API_ALIBABA_ALIQIN_FC_SMS_NUM_SEND = 'alibaba.aliqin.fc.sms.num.send'; // 短信发送
+    const API_ALIBABA_ALIQIN_FC_SMS_NUM_QUERY = 'alibaba.aliqin.fc.sms.num.query'; // 短信发送记录查询
 
     /**
      * API服务器地址
@@ -247,12 +248,12 @@ class Alidayu extends Component
 
     /**
      * 短信发送
-     * @param string $recNum
-     * @param string $templateCode
-     * @param string $signName
-     * @param string $smsType
-     * @param array $param
-     * @param string $extend
+     * @param string $recNum 短信接收号码。支持单个或多个手机号码，群发短信需传入多个号码，以英文逗号分隔，一次调用最多传入200个号码。
+     * @param string $templateCode 短信模板ID，传入的模板必须是在阿里大于“管理中心-短信模板管理”中的可用模板。
+     * @param string $signName 短信签名，传入的短信签名必须是在阿里大于“管理中心-短信签名管理”中的可用签名。
+     * @param string $smsType 短信类型，传入值请填写normal
+     * @param array $param 短信模板变量，传参规则{"key":"value"}，key的名字须和申请模板中的变量名一致，多个变量之间以逗号隔开。
+     * @param string $extend 公共回传参数，在“消息返回”中会透传回该参数
      * @return mixed
      */
     public function smsSend($recNum, $templateCode, $signName, $smsType = 'normal', $param = [], $extend = '')
@@ -277,6 +278,50 @@ class Alidayu extends Component
         }
         if ($extend !== '') {
             $data['extend'] = $extend;
+        }
+
+        // 签名
+        $signature = $this->getSignature($data, $this->signMethod);
+        $data['sign'] = $signature;
+        // 请求
+        $response = $this->apiClient->post(
+            null,
+            [
+                'body' => $data,
+            ]
+        );
+        $result = $response->json();
+        return $result;
+    }
+
+    /**
+     * 短信发送记录查询
+     * @param string $recNum 短信接收号码
+     * @param string $queryDate 短信发送日期，支持近30天记录查询，格式yyyyMMdd
+     * @param int $currentPage 分页参数,页码
+     * @param int $pageSize 分页参数，每页数量。最大值50
+     * @param string $bizId 短信发送流水,同发送结果中model值
+     * @return mixed
+     */
+    public function smsQuery($recNum, $queryDate, $currentPage = 1, $pageSize = 50, $bizId = '')
+    {
+        // 公共参数
+        $data = [
+            'app_key' => $this->appKey,
+            'timestamp' => $this->getTimestamp(),
+            'format' => $this->format,
+            'v' => $this->appVersion,
+            'sign_method' => $this->signMethod,
+            'method' => Alidayu::API_ALIBABA_ALIQIN_FC_SMS_NUM_QUERY,
+        ];
+
+        // 入参
+        $data['rec_num'] = $recNum;
+        $data['query_date'] = $queryDate;
+        $data['current_page'] = $currentPage;
+        $data['page_size'] = $pageSize;
+        if ($bizId !== '') {
+            $data['biz_id'] = $bizId;
         }
 
         // 签名
