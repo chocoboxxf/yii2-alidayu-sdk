@@ -100,7 +100,7 @@ if (isset($result['alibaba_aliqin_fc_sms_num_send_response'])) {
 
 ```php
 $result = Yii::$app->alidayu->smsQuery('13000000000', '20160909', 1, 50, '100000000000^1000000000000');
-if (isset($result['alibaba_aliqin_fc_sms_num_send_response'])) {
+if (isset($result['alibaba_aliqin_fc_sms_num_query_response'])) {
     // 正常情况
     // 返回数据格式
     // {
