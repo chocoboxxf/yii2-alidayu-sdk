@@ -8,6 +8,8 @@
 namespace chocoboxxf\Alidayu;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Psr7\Request;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
 
@@ -41,6 +43,7 @@ class Alidayu extends Component
 
     const API_ALIBABA_ALIQIN_FC_SMS_NUM_SEND = 'alibaba.aliqin.fc.sms.num.send'; // 短信发送
     const API_ALIBABA_ALIQIN_FC_SMS_NUM_QUERY = 'alibaba.aliqin.fc.sms.num.query'; // 短信发送记录查询
+    const API_ALIBABA_ALIQIN_FC_TTS_NUM_SINGLECALL = 'alibaba.aliqin.fc.tts.num.singlecall'; // 文本转语音通知
 
     /**
      * API服务器地址
@@ -115,10 +118,7 @@ class Alidayu extends Component
             throw new InvalidConfigException('请先配置App Secret');
         }
         $this->apiClient = new Client([
-            'base_url' => [
-                $this->isSecure ? $this->apiUrls['https'][$this->env] :  $this->apiUrls['http'][$this->env],
-                [],
-            ],
+            'base_uri' => $this->isSecure ? $this->apiUrls['https'][$this->env] :  $this->apiUrls['http'][$this->env],
         ]);
     }
 
@@ -131,6 +131,7 @@ class Alidayu extends Component
      * @param bool|false $otherCall 第三方是否可拨打X转接到号码A
      * @param bool|false $needRecord 是否需要录音
      * @return mixed
+     * @throws GuzzleException
      */
     public function AxbBind($phoneA, $phoneB, $endDate, $otherCall = false, $needRecord = false)
     {
@@ -156,14 +157,7 @@ class Alidayu extends Component
         $signature = $this->getSignature($data, $this->signMethod);
         $data['sign'] = $signature;
         // 请求
-        $response = $this->apiClient->post(
-            null,
-            [
-                'body' => $data,
-            ]
-        );
-        $result = $response->json();
-        return $result;
+        return $this->post('', $data);
     }
 
     /**
@@ -175,6 +169,7 @@ class Alidayu extends Component
      * @param bool|false $otherCall 第三方是否可拨打X转接到号码A
      * @param bool|false $needRecord 是否需要录音
      * @return mixed
+     * @throws GuzzleException
      */
     public function AxbBindSecond($subsId, $phoneB, $endDate, $otherCall = false, $needRecord = false)
     {
@@ -200,14 +195,7 @@ class Alidayu extends Component
         $signature = $this->getSignature($data, $this->signMethod);
         $data['sign'] = $signature;
         // 请求
-        $response = $this->apiClient->post(
-            null,
-            [
-                'body' => $data,
-            ]
-        );
-        $result = $response->json();
-        return $result;
+        return $this->post('', $data);
     }
 
     /**
@@ -215,6 +203,7 @@ class Alidayu extends Component
      * 通过该接口，实现AXB三元关系的解绑，解绑过后，再通过呼叫X，将不能找到A或者B。
      * @param string $subsId 绑定关系ID
      * @return mixed
+     * @throws GuzzleException
      */
     public function AxbUnbind($subsId)
     {
@@ -236,14 +225,7 @@ class Alidayu extends Component
         $signature = $this->getSignature($data, $this->signMethod);
         $data['sign'] = $signature;
         // 请求
-        $response = $this->apiClient->post(
-            null,
-            [
-                'body' => $data,
-            ]
-        );
-        $result = $response->json();
-        return $result;
+        return $this->post('', $data);
     }
 
     /**
@@ -255,6 +237,7 @@ class Alidayu extends Component
      * @param array $param 短信模板变量，传参规则{"key":"value"}，key的名字须和申请模板中的变量名一致，多个变量之间以逗号隔开。
      * @param string $extend 公共回传参数，在“消息返回”中会透传回该参数
      * @return mixed
+     * @throws GuzzleException
      */
     public function smsSend($recNum, $templateCode, $signName, $smsType = 'normal', $param = [], $extend = '')
     {
@@ -284,14 +267,7 @@ class Alidayu extends Component
         $signature = $this->getSignature($data, $this->signMethod);
         $data['sign'] = $signature;
         // 请求
-        $response = $this->apiClient->post(
-            null,
-            [
-                'body' => $data,
-            ]
-        );
-        $result = $response->json();
-        return $result;
+        return $this->post('', $data);
     }
 
     /**
@@ -302,6 +278,7 @@ class Alidayu extends Component
      * @param int $pageSize 分页参数，每页数量。最大值50
      * @param string $bizId 短信发送流水,同发送结果中model值
      * @return mixed
+     * @throws GuzzleException
      */
     public function smsQuery($recNum, $queryDate, $currentPage = 1, $pageSize = 50, $bizId = '')
     {
@@ -328,14 +305,47 @@ class Alidayu extends Component
         $signature = $this->getSignature($data, $this->signMethod);
         $data['sign'] = $signature;
         // 请求
-        $response = $this->apiClient->post(
-            null,
-            [
-                'body' => $data,
-            ]
-        );
-        $result = $response->json();
-        return $result;
+        return $this->post('', $data);
+    }
+
+    /**
+     * 文本转语音通知
+     * @param string $calledNum 被叫号码，支持国内手机号与固话号码
+     * @param string $ttsCode TTS模板ID，传入的模板必须是在阿里大于“管理中心-语音TTS模板管理”中的可用模板
+     * @param string $calledShowNum 被叫号显，传入的显示号码必须是阿里大于“管理中心-号码管理”中申请或购买的号码
+     * @param array $param 文本转语音（TTS）模板变量，传参规则{"key"："value"}，key的名字须和TTS模板中的变量名一致
+     * @param string $extend 公共回传参数，在“消息返回”中会透传回该参数
+     * @return mixed
+     * @throws GuzzleException
+     */
+    public function ttsSingleCall($calledNum, $ttsCode, $calledShowNum, $param = [], $extend = '')
+    {
+        // 公共参数
+        $data = [
+            'app_key' => $this->appKey,
+            'timestamp' => $this->getTimestamp(),
+            'format' => $this->format,
+            'v' => $this->appVersion,
+            'sign_method' => $this->signMethod,
+            'method' => Alidayu::API_ALIBABA_ALIQIN_FC_TTS_NUM_SINGLECALL,
+        ];
+
+        // 入参
+        $data['called_num'] = $calledNum;
+        $data['tts_code'] = $ttsCode;
+        $data['called_show_num'] = $calledShowNum;
+        if (count($param) > 0) {
+            $data['tts_param'] = json_encode($param);
+        }
+        if ($extend !== '') {
+            $data['extend'] = $extend;
+        }
+
+        // 签名
+        $signature = $this->getSignature($data, $this->signMethod);
+        $data['sign'] = $signature;
+        // 请求
+        return $this->post('', $data);
     }
 
     /**
@@ -370,4 +380,45 @@ class Alidayu extends Component
         return date('Y-m-d H:i:s');
     }
 
+    /**
+     * post请求
+     * @param string $url 接口相对路径
+     * @param array $data 接口传参
+     * @param array $headers HTTP Header
+     * @return mixed
+     * @throws GuzzleException
+     */
+    public function post($url, $data, $headers = [])
+    {
+        $request = new Request('POST', $url, $headers);
+        $response = $this->apiClient->send(
+            $request,
+            [
+                'form_params' => $data,
+            ]
+        );
+        $result = json_decode($response->getBody(), true);
+        return $result;
+    }
+
+    /**
+     * get请求
+     * @param string $url 接口相对路径
+     * @param array $data 接口传参
+     * @param array $headers HTTP Header
+     * @return mixed
+     * @throws GuzzleException
+     */
+    public function get($url, $data, $headers = [])
+    {
+        $request = new Request('GET', $url, $headers);
+        $response = $this->apiClient->send(
+            $request,
+            [
+                'query' => $data,
+            ]
+        );
+        $result = json_decode($response->getBody(), true);
+        return $result;
+    }
 }

@@ -82,9 +82,9 @@ if (isset($result['alibaba_aliqin_fc_sms_num_send_response'])) {
     // {
     //     "error_response":{
     //         "code":15,
-    //         "msg":"Remote service error"，
+    //         "msg":"Remote service error",
     //         "sub_code":"isv.ACCOUNT_NOT_EXISTS",
-    //         "sub_msg":"阿里大于账户不存在"，
+    //         "sub_msg":"阿里大于账户不存在",
     //         "request_id":"zt9pqaglr3tk"
     //     }
     // }
@@ -132,11 +132,48 @@ if (isset($result['alibaba_aliqin_fc_sms_num_query_response'])) {
     // {
     //     "error_response":{
     //         "code":15,
-    //         "msg":"Remote service error"，
+    //         "msg":"Remote service error",
     //         "sub_code":"isv.ACCOUNT_NOT_EXISTS",
-    //         "sub_msg":"阿里大于账户不存在"，
+    //         "sub_msg":"阿里大于账户不存在",
     //         "request_id":"zt9pqaglr3tk"
     //     }
+    // }
+    ....
+} else {
+    // 异常情况
+    ....
+}
+....
+```
+
+文本转语音通知接口
+
+```php
+$result = Yii::$app->alidayu->ttsSingleCall('13000000000', 'TTS_14730399', '051482043260', ['code' => '111111'], '100000'));
+if (isset($result['alibaba_aliqin_fc_tts_num_singlecall_response'])) {
+    // 正常情况
+    // 返回数据格式
+    // {
+    //     "alibaba_aliqin_fc_tts_num_singlecall_response":{
+    //         "result":{
+    //             "err_code":"0",
+    //             "model":"100000000000^1000000000000",
+    //             "success":true
+    //         },
+    //         "request_id":"zt9pqaglr3tk"
+    //     }
+    // }
+    ....
+} elseif (isset($result['error_response'])) {
+    // 出错情况
+    // 返回数据格式
+    // {
+    //     "error_response":{
+    //         "code":15,
+    //         "msg":"Remote service error",
+    //         "sub_code":"isv.TTS_TEMPLATE_ILLEGAL",
+    //         "sub_msg":"未找到审核通过的文本转语音模板,ttsCode=TTS_100000,partnerId=10000000000",
+    //         "request_id":"zt9pqaglr3tk"
     // }
     ....
 } else {
@@ -166,7 +203,7 @@ if (isset($result['alibaba_aliqin_secret_axb_bind_response'])) {
     // {
     //     "error_response":{
     //         "code":40,
-    //         "msg":"Missing required arguments:phone_no_b"，
+    //         "msg":"Missing required arguments:phone_no_b",
     //         "request_id":"zt9pqaglr3tk"
     //     }
     // }
@@ -197,7 +234,7 @@ if (isset($result['alibaba_aliqin_secret_axb_bind_second_response'])) {
     // {
     //     "error_response":{
     //         "code":40,
-    //         "msg":"Missing required arguments:phone_no_b"，
+    //         "msg":"Missing required arguments:phone_no_b",
     //         "request_id":"zt9pqaglr3tk"
     //     }
     // }
@@ -229,7 +266,7 @@ if (isset($result['alibaba_aliqin_secret_axb_unbind_response'])) {
     // {
     //     "error_response":{
     //         "code":40,
-    //         "msg":"Missing required arguments:subs_id"，
+    //         "msg":"Missing required arguments:subs_id",
     //         "request_id":"zt9pqaglr3tk"
     //     }
     // }
