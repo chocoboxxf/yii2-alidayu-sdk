@@ -8,7 +8,6 @@
 namespace chocoboxxf\Alidayu;
 
 use GuzzleHttp\Client;
-use Yii;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
 
@@ -39,6 +38,8 @@ class Alidayu extends Component
     const API_ALIBABA_ALIQIN_SECRET_AXB_BIND = 'alibaba.aliqin.secret.axb.bind'; // AXB一次绑定接口
     const API_ALIBABA_ALIQIN_SECRET_AXB_BIND_SECOND = 'alibaba.aliqin.secret.axb.bind.second'; // AXB二次绑定接口
     const API_ALIBABA_ALIQIN_SECRET_AXB_UNBIND = 'alibaba.aliqin.secret.axb.unbind'; // AXB关系解绑接口
+
+    const API_ALIBABA_ALIQIN_FC_SMS_NUM_SEND = 'alibaba.aliqin.fc.sms.num.send'; // 短信发送
 
     /**
      * API服务器地址
@@ -229,6 +230,54 @@ class Alidayu extends Component
         // 入参
         $data['partner_key'] = $this->partnerKey;
         $data['subs_id'] = $subsId;
+
+        // 签名
+        $signature = $this->getSignature($data, $this->signMethod);
+        $data['sign'] = $signature;
+        // 请求
+        $response = $this->apiClient->post(
+            null,
+            [
+                'body' => $data,
+            ]
+        );
+        $result = $response->json();
+        return $result;
+    }
+
+    /**
+     * 短信发送
+     * @param string $recNum
+     * @param string $templateCode
+     * @param string $signName
+     * @param string $smsType
+     * @param array $param
+     * @param string $extend
+     * @return mixed
+     */
+    public function smsSend($recNum, $templateCode, $signName, $smsType = 'normal', $param = [], $extend = '')
+    {
+        // 公共参数
+        $data = [
+            'app_key' => $this->appKey,
+            'timestamp' => $this->getTimestamp(),
+            'format' => $this->format,
+            'v' => $this->appVersion,
+            'sign_method' => $this->signMethod,
+            'method' => Alidayu::API_ALIBABA_ALIQIN_FC_SMS_NUM_SEND,
+        ];
+
+        // 入参
+        $data['rec_num'] = $recNum;
+        $data['sms_template_code'] = $templateCode;
+        $data['sms_free_sign_name'] = $signName;
+        $data['sms_type'] = $smsType;
+        if (count($param) > 0) {
+            $data['sms_param'] = json_encode($param);
+        }
+        if ($extend !== '') {
+            $data['extend'] = $extend;
+        }
 
         // 签名
         $signature = $this->getSignature($data, $this->signMethod);

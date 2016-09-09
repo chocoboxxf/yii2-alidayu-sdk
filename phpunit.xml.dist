@@ -22,4 +22,11 @@
             <directory suffix=".php">./src/</directory>
         </whitelist>
     </filter>
+
+    <php>
+        <env name="APP_KEY" value="APP_KEY" />
+        <env name="APP_SECRET" value="APP_SECRET" />
+        <env name="PARTNER_KEY" value="PARTNER_KEY" />
+        <env name="APP_ENV" value="production" />
+    </php>
 </phpunit>
