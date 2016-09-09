@@ -8,19 +8,10 @@
 
 namespace chocoboxxf\Alidayu\Tests;
 
-use Yii;
-
-class AxbBindSecondTest extends \PHPUnit_Framework_TestCase
+class AxbBindSecondTest extends BaseTest
 {
     public function testBind()
     {
-        $alidayu = Yii::createObject([
-            'class' => 'chocoboxxf\Alidayu\Alidayu',
-            'appKey' => 'APP_KEY',
-            'appSecret' => 'APP_SECRET',
-            'partnerKey' => 'PARTNER_NAME_AXN',
-            'env' => 'sandbox',
-        ]);
-        var_dump($alidayu->AxbBindSecond('123', '13000000000', '2017-01-01 00:00:00', true, true));
+        var_dump($this->client->AxbBindSecond('123', '13000000000', '2017-01-01 00:00:00', true, true));
     }
 }

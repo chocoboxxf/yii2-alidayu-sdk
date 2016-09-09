@@ -8,19 +8,10 @@
 
 namespace chocoboxxf\Alidayu\Tests;
 
-use Yii;
-
-class AxbUnbindTest extends \PHPUnit_Framework_TestCase
+class AxbUnbindTest extends BaseTest
 {
     public function testBind()
     {
-        $alidayu = Yii::createObject([
-            'class' => 'chocoboxxf\Alidayu\Alidayu',
-            'appKey' => 'APP_KEY',
-            'appSecret' => 'APP_SECRET',
-            'partnerKey' => 'PARTNER_NAME_AXN',
-            'env' => 'sandbox',
-        ]);
-        var_dump($alidayu->AxbUnbind('123'));
+        var_dump($this->client->AxbUnbind('123'));
     }
 }
