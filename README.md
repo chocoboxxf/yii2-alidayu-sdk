@@ -58,6 +58,94 @@ $result = $alidayu->AxbBind('13000000001', '13000000000', '2017-01-01 00:00:00')
 使用示例
 --------
 
+短信发送接口
+
+```php
+$result = Yii::$app->alidayu->smsSend('13000000000', 'SMS_100000', '测试签名', 'normal', ['code' => '111111'], '100000');
+if (isset($result['alibaba_aliqin_fc_sms_num_send_response'])) {
+    // 正常情况
+    // 返回数据格式
+    // {
+    //     "alibaba_aliqin_fc_sms_num_send_response":{
+    //         "result":{
+    //             "err_code":"0",
+    //             "model":"100000000000^1000000000000",
+    //             "success":true
+    //         },
+    //         "request_id":"zt9pqaglr3tk"
+    //     }
+    // }
+    ....
+} elseif (isset($result['error_response'])) {
+    // 出错情况
+    // 返回数据格式
+    // {
+    //     "error_response":{
+    //         "code":15,
+    //         "msg":"Remote service error"，
+    //         "sub_code":"isv.ACCOUNT_NOT_EXISTS",
+    //         "sub_msg":"阿里大于账户不存在"，
+    //         "request_id":"zt9pqaglr3tk"
+    //     }
+    // }
+    ....
+} else {
+    // 异常情况
+    ....
+}
+....
+```
+
+短信发送记录查询接口
+
+```php
+$result = Yii::$app->alidayu->smsQuery('13000000000', '20160909', 1, 50, '100000000000^1000000000000');
+if (isset($result['alibaba_aliqin_fc_sms_num_send_response'])) {
+    // 正常情况
+    // 返回数据格式
+    // {
+    //     "alibaba_aliqin_fc_sms_num_query_response":{
+    //         "current_page":1,
+    //         "page_size":50,
+    //         "total_count":1,
+    //         "total_page":1,
+    //         "values":{
+    //             "fc_partner_sms_detail_dto":[
+    //                 {
+    //                     "extend":"100000",
+    //                     "rec_num":"13000000000",
+    //                     "result_code":"DELIVRD",
+    //                     "sms_code":"SMS_100000",
+    //                     "sms_content":"【测试*】您的验证码是******",
+    //                     "sms_receiver_time":"2016-09-09 15:27:46",
+    //                     "sms_send_time":"2016-09-09 15:27:42",
+    //                     "sms_status":3
+    //                 }
+    //             ]
+    //         }
+    //     }
+    // }
+    ....
+} elseif (isset($result['error_response'])) {
+    // 出错情况
+    // 返回数据格式
+    // {
+    //     "error_response":{
+    //         "code":15,
+    //         "msg":"Remote service error"，
+    //         "sub_code":"isv.ACCOUNT_NOT_EXISTS",
+    //         "sub_msg":"阿里大于账户不存在"，
+    //         "request_id":"zt9pqaglr3tk"
+    //     }
+    // }
+    ....
+} else {
+    // 异常情况
+    ....
+}
+....
+```
+
 AXB(AXN)一次绑定接口
 
 ```php
