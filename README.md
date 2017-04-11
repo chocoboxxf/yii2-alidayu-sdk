@@ -5,7 +5,7 @@
 --------
 - >= PHP 5.4
 - >= Yii 2.0
-- >= GuzzleHttp 5.0
+- >= GuzzleHttp 6.0
 
 安装
 ----
@@ -37,8 +37,8 @@
   ]
   ....
 ]
-// 代码中调用
-$result = Yii::$app->alidayu->AxbBind('13000000001', '13000000000', '2017-01-01 00:00:00');
+// 代码中调用（调用短信发送接口示例）
+$result = Yii::$app->alidayu->smsSend('13000000000', 'SMS_100000', '测试签名', 'normal', ['code' => '111111'], '100000');
 ....
 ```
 
@@ -51,7 +51,8 @@ $alidayu = Yii::createObject([
     'partnerKey' => 'PARTNER_NAME_AXN', // 阿里大鱼提供的第三方合作伙伴使用的KEY
     'env' => 'sandbox', // 使用环境，分sandbox（测试环境）, production（生产环境）
 ]);
-$result = $alidayu->AxbBind('13000000001', '13000000000', '2017-01-01 00:00:00');
+// 调用短信发送接口示例
+$result = $alidayu->smsSend('13000000000', 'SMS_100000', '测试签名', 'normal', ['code' => '111111'], '100000');
 ....
 ```
 
